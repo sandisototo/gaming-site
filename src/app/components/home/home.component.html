@@ -1,0 +1,50 @@
+<mat-card>
+  <div class="search-container">
+    <mat-card-title>Repository Search</mat-card-title>
+
+    <form class="example-form">
+      <mat-form-field class="example-full-width">
+        <input matInput type="text" placeholder="Search..." [formControl]="searchFormControl" (keydown.enter)="search()"
+          [errorStateMatcher]="matcher">
+        <button mat-button *ngIf="searchFormControl.value" matSuffix mat-icon-button aria-label="Clear"
+          (click)="clearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-error *ngIf="searchFormControl.hasError('required')">
+          Please type in your <strong>search</strong> word :)
+        </mat-error>
+      </mat-form-field>
+      <button type="button" class="search-btn" mat-fab color="primary" [disabled]="!searchFormControl.value" aria-label="Search"
+        (click)="search()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </form>
+  </div>
+  <mat-accordion *ngIf="_repositories; else loading">
+    <p [hidden]="!_searchStr">Showing <b>{{_repositories.length}}</b> of "{{_searchStr}}"...</p>
+    <mat-expansion-panel *ngFor="let repository of _repositories">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{repository.name}}
+        </mat-panel-title>
+        <mat-panel-description>
+          {{repository.full_name || 'Not provided!'}}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <h4>More info</h4>
+      <p>Description: {{repository.description || 'Not provided!'}}</p>
+      <p>Clone url: [ git clone {{repository.clone_url || 'Not provided!'}} ]</p>
+      <p>Forks count: {{repository.forks_count }}</p>
+      <p>Stargazers count: {{repository.stargazers_count}}</p>
+      <p>Open issues count: {{repository.open_issues_count}}</p>
+      <br />
+
+      <a mat-button href="{{repository.html_url}}" target="blank">View on Github</a>
+      <a mat-button [routerLink]="['/repository-issues',repository.full_name]" >View Issues</a>
+    </mat-expansion-panel>
+  </mat-accordion>
+</mat-card>
+<ng-template #loading>
+  <div *ngIf="processing">Loading...</div>
+</ng-template>
